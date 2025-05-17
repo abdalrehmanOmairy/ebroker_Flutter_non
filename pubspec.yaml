@@ -25,71 +25,62 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter    
-  flutter_paystack: ^1.0.7  #
+  # flutter_paystack: ^1.0.7  #
+  flutter_paystack_max: ^1.0.2
   cupertino_icons: ^1.0.2
-  firebase_core: ^2.8.0
-  firebase_auth: ^4.3.0
-  firebase_messaging: ^14.3.0
+  firebase_core: ^3.13.0
+  firebase_auth: ^5.5.3
+  firebase_messaging: ^15.2.5
   # flutter_local_notifications:  9.6.0 
-  firebase_core_platform_interface: 4.5.3
-  panorama: ^0.4.1
-  http: ^0.13.3
+  http: ^1.2.0
   http_parser: any
   mime: any
-  flick_video_player: ^0.5.0
+  flick_video_player: ^0.9.0
   video_player: ^2.4.10
-  youtube_player_flutter: ^8.1.2
+  youtube_player_flutter: ^9.1.1
   flutter_svg: 1.1.6
   shared_preferences: ^2.0.15
-  flutter_native_image: 0.0.6+1
-  country_code_picker: ^2.0.2
+  # flutter_native_image: 0.0.6+1
   country_picker: ^2.0.19 
   sms_autofill: ^2.2.0
-  connectivity_plus: ^2.3.7
+  connectivity_plus: ^6.1.4
   hive: ^2.2.1
   hive_flutter: ^1.1.0
-  dio: ^4.0.6
+  dio: ^5.4.0
   image_picker: ^0.8.5+3
   file_picker: ^5.2.4
   flutter_bloc: ^8.1.1
   shimmer: ^2.0.0
   cached_network_image: ^3.2.3
   intl: ^0.17.0
-  rive: ^0.9.1
-  octo_image: ^1.0.2
+  rive: ^0.13.20
   dotted_border: ^2.0.0+3
   url_launcher: ^6.1.6 
   flutter_html: ^3.0.0-beta.1
-  share_plus: ^4.4.0
-  launch_review: ^3.0.1
+  # share_plus: ^4.4.0
   lottie: ^2.1.0
   #payment gatewats
   razorpay_flutter: ^1.3.5
-  flutter_paypal: ^0.0.8
-  flutter_sim_country_code: ^0.1.2
   mime_type: ^1.0.0
   google_maps_flutter: 2.2.6 #   google_maps_flutter: ^2.2.1
   awesome_notifications: ^0.7.4+1
   device_preview: ^1.1.0
   path_provider: ^2.0.13
-  record: ^4.4.4
-  audioplayers: ^3.0.1
-  image_cropper: ^3.0.1
-  # just_audio:
+  audioplayers: ^6.4.0
+  image_cropper: ^9.1.0
   # flutter_downloader: ^1.10.2
   # flutter_ringtone_player: ^3.2.0
   permission_handler: ^10.2.0
   open_filex: ^4.3.2
   # emoji_picker_flutter: ^1.5.2
   # rxdart: ^0.27.7
-  flutter_vibrate: ^1.3.0
-  mason_cli: ^0.1.0-dev.49
-  firebase_dynamic_links: ^5.0.17
+  # flutter_vibrate: ^1.3.0
+  firebase_dynamic_links: ^6.1.5
   package_info_plus: ^4.0.2
   fluttertoast: ^8.2.1
   hydrated_bloc: ^9.1.0
   label_marker: ^1.0.1
-  flutter_typeahead: ^4.3.7
+  flutter_typeahead: ^5.2.0
   any_link_preview: ^3.0.0
   geocoding: ^2.1.0
   flutter_stripe: ^9.4.0
@@ -98,23 +89,28 @@ dependencies:
   logger: ^1.4.0
   file_icon: ^1.0.0
   palette_generator: ^0.3.3+2
-  carousel_slider: ^4.2.1
-  firebase_analytics: ^10.1.6
+  firebase_analytics: ^11.4.5
   encrypt: ^5.0.3
+  webview_flutter: ^4.10.0
+  share_plus: ^11.0.0
+  vibration: ^3.1.3
+  flutter_image_compress: ^2.4.0
+  mobile_number: ^3.0.0
+  in_app_review: ^2.0.10
+  panorama_viewer: ^1.0.6
+  record: ^6.0.0
   
 
 
 dependency_overrides:
   flutter_svg : ^1.0.0
   intl: ^0.17.0
-  wakelock: ^0.6.2
   package_info_plus: ^4.0.2
-  wakelock_windows: any
-  win32:
-
+  flutter_inappwebview: ^6.1.5
   # file_version_info: any
-
-
+  win32: 5.10.1
+  dchs_motion_sensors: ^2.0.1
+  
 dev_dependencies:
   rename: ^2.0.1
 

@@ -18,9 +18,9 @@ class CropImage {
 
     CroppedFile? croppedFile = await ImageCropper().cropImage(
       sourcePath: filePath,
-      aspectRatioPresets: [
-        CropAspectRatioPreset.square,
-      ],
+      // aspectRatioPresets: [
+      //   CropAspectRatioPreset.square,
+      // ],
       uiSettings: [
         AndroidUiSettings(
             toolbarTitle: 'Cropper',

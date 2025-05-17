@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_paystack/flutter_paystack.dart';
+import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import '../../../data/cubits/subscription/fetch_subscription_packages_cubit.dart';
@@ -22,7 +22,7 @@ import '../widgets/blurred_dialoge_box.dart';
 import '../../../utils/payment/gatways/paypal.dart';
 
 class PaymentGatways {
-  static PaystackPlugin paystackPlugin = PaystackPlugin();
+  // static PaystackPlugin paystackPlugin = PaystackPlugin();
 
   static openEnabled(BuildContext context, dynamic price, dynamic package) {
     if (AppSettings.enabledPaymentGatway == "paystack") {
@@ -51,9 +51,9 @@ class PaymentGatways {
 
   static void initPaystack() {
     if (AppSettings.enabledPaymentGatway == "paystack") {
-      if (!paystackPlugin.sdkInitialized) {
-        paystackPlugin.initialize(publicKey: Constant.paystackKey);
-      }
+      // if (!paystackPlugin.sdkInitialized) {
+      //   paystackPlugin.initialize(publicKey: Constant.paystackKey);
+      // }
     }
   }
 
@@ -71,56 +71,57 @@ class PaymentGatways {
 
   static Future<void> paystack(
       BuildContext context, dynamic price, dynamic packageId) async {
-    Charge paystackCharge = Charge()
-      ..amount = (price! * 100).toInt()
-      ..email = HiveUtils.getUserDetails().email
-      ..currency = Constant.paystackCurrency
-      ..reference = generateReference(HiveUtils.getUserDetails().email!)
-      ..putMetaData("username", HiveUtils.getUserDetails().name)
-      ..putMetaData("package_id", packageId)
-      ..putMetaData("user_id", HiveUtils.getUserId());
+    // Charge paystackCharge = Charge()
+    //   ..amount = (price! * 100).toInt()
+    //   ..email = HiveUtils.getUserDetails().email
+    //   ..currency = Constant.paystackCurrency
+    //   ..reference = generateReference(HiveUtils.getUserDetails().email!)
+    //   ..putMetaData("username", HiveUtils.getUserDetails().name)
+    //   ..putMetaData("package_id", packageId)
+    //   ..putMetaData("user_id", HiveUtils.getUserId());
 
-    CheckoutResponse checkoutResponse = await paystackPlugin.checkout(context,
-        logo: SizedBox(
-            height: 50,
-            width: 50,
-            child: UiUtils.getSvg(AppIcons.splashLogo,
-                color: context.color.teritoryColor)),
-        charge: paystackCharge,
-        method: CheckoutMethod.card);
+    // CheckoutResponse checkoutResponse = await paystackPlugin.checkout(context,
+    //     logo: SizedBox(
+    //         height: 50,
+    //         width: 50,
+    //         child: UiUtils.getSvg(AppIcons.splashLogo,
+    //             color: context.color.teritoryColor)),
+    //     charge: paystackCharge,
+    //     method: CheckoutMethod.card);
 
-    if (checkoutResponse.status) {
-      if (checkoutResponse.verify) {
-        Future.delayed(
-          Duration.zero,
-          () async {
-            await _purchase(context);
-          },
-        );
-      }
-    } else {
-      Future.delayed(
-        Duration.zero,
-        () {
-          HelperUtils.showSnackBarMessage(
-              context, UiUtils.getTranslatedLabel(context, "purchaseFailed"));
-        },
-      );
-    }
+    // if (checkoutResponse.status) {
+    //   if (checkoutResponse.verify) {
+    //     Future.delayed(
+    //       Duration.zero,
+    //       () async {
+    //         await _purchase(context);
+    //       },
+    //     );
+    //   }
+    // } else {
+    //   Future.delayed(
+    //     Duration.zero,
+    //     () {
+    //       HelperUtils.showSnackBarMessage(
+    //           context, UiUtils.getTranslatedLabel(context, "purchaseFailed"));
+    //     },
+    //   );
+    // }
   }
 
   static void paypal(BuildContext context, dynamic package) {
     Navigator.push<dynamic>(context, BlurredRouter(
       builder: (context) {
-        return PaypalWidget(
-          pacakge: package,
-          onSuccess: (msg) {
-            Navigator.pop(context, {"msg": msg, "type": "success"});
-          },
-          onFail: (msg) {
-            Navigator.pop(context, {"msg": msg, "type": "fail"});
-          },
-        );
+        return SizedBox();
+        // PaypalWidget(
+        //   pacakge: package,
+        //   onSuccess: (msg) {
+        //     Navigator.pop(context, {"msg": msg, "type": "success"});
+        //   },
+        //   onFail: (msg) {
+        //     Navigator.pop(context, {"msg": msg, "type": "fail"});
+        //   },
+        // );
       },
     )).then((dynamic value) {
       //push and show dialog box about paypal success or failed, after that we call purchase method it will refresh API and check if package is purchased or not

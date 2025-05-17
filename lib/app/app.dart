@@ -16,7 +16,6 @@ import '../data/Repositories/system_repository.dart';
 import '../data/cubits/Personalized/fetch_personalized_properties.dart';
 import '../data/model/Personalized/personalized_settings.dart';
 import '../data/model/system_settings_model.dart';
-import '../firebase_options.dart';
 import '../main.dart';
 import '../utils/api.dart';
 import '../utils/guestChecker.dart';
@@ -39,8 +38,8 @@ void initApp() async {
   }
 
   if (Firebase.apps.isNotEmpty) {
-    await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform);
+    // await Firebase.initializeApp(
+    //     options: DefaultFirebaseOptions.currentPlatform);
   } else {
     await Firebase.initializeApp();
   }

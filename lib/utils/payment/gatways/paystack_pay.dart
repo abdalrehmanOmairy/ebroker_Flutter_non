@@ -5,7 +5,7 @@ import 'package:ebroker/utils/Extensions/extensions.dart';
 import 'package:ebroker/utils/payment/lib/payment.dart';
 import 'package:ebroker/utils/payment/lib/purchase_package.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_paystack/flutter_paystack.dart';
+import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 
 import '../../AppIcon.dart';
 import '../../constant.dart';
@@ -15,13 +15,6 @@ import '../../ui_utils.dart';
 
 class Paystack extends Payment {
   SubscriptionPackageModel? _model;
-
-  PaystackPlugin paystackPlugin = PaystackPlugin();
-
-  void init(String publicKey){
-    paystackPlugin.initialize(publicKey: publicKey);
-  }
-
 
   @override
   void onEvent(
@@ -37,41 +30,59 @@ class Paystack extends Payment {
       throw "Please setPackage";
     }
 
-    Charge paystackCharge = Charge()
-      ..amount = (_model!.price! * 100).toInt()
-      ..email = HiveUtils.getUserDetails().email
-      ..currency = Constant.paystackCurrency
-      ..reference = generateReference(HiveUtils.getUserDetails().email!)
-      ..putMetaData("username", HiveUtils.getUserDetails().name)
-      ..putMetaData("package_id", _model!.id)
-      ..putMetaData("user_id", HiveUtils.getUserId());
+    final request = PaystackTransactionRequest(
+      reference: generateReference(HiveUtils.getUserDetails().email!),
+      secretKey: Constant.paystackKey, // Use your secret key here
+      email: HiveUtils.getUserDetails().email!,
+      amount: (_model!.price! * 100).toDouble(),
+      currency:
+          PaystackCurrency.ngn, // Or use Constant.paystackCurrency if mapped
+      channel: [
+        PaystackPaymentChannel.card,
+        PaystackPaymentChannel.bankTransfer,
+        PaystackPaymentChannel.mobileMoney,
+        PaystackPaymentChannel.ussd,
+        PaystackPaymentChannel.bank,
+        PaystackPaymentChannel.qr,
+        PaystackPaymentChannel.eft,
+      ],
+      metadata: {
+        "username": HiveUtils.getUserDetails().name,
+        "package_id": _model!.id,
+        "user_id": HiveUtils.getUserId(),
+      },
+    );
 
-    CheckoutResponse checkoutResponse = await paystackPlugin.checkout(context,
-        logo: SizedBox(
-            height: 50,
-            width: 50,
-            child: UiUtils.getSvg(AppIcons.splashLogo,
-                color: context.color.teritoryColor)),
-        charge: paystackCharge,
-        method: CheckoutMethod.card);
+    final initializedTransaction =
+        await PaymentService.initializeTransaction(request);
 
-    if (checkoutResponse.status) {
-      if (checkoutResponse.verify) {
-        Future.delayed(
-          Duration.zero,
-          () async {
-            emit(Success(message: "Success"));
-            // await _purchase(context);
-          },
-        );
-      }
+    if (!initializedTransaction.status) {
+      HelperUtils.showSnackBarMessage(
+        context,
+        initializedTransaction.message,
+      );
+      emit(Failure(message: initializedTransaction.message));
+      return;
+    }
+
+    await PaymentService.showPaymentModal(
+      context,
+      transaction: initializedTransaction,
+      callbackUrl: 'https://callback.com', // Replace with your callback URL
+    );
+
+    final response = await PaymentService.verifyTransaction(
+      paystackSecretKey: Constant.paystackKey,
+      initializedTransaction.data?.reference ?? request.reference,
+    );
+
+    if (response.status) {
+      emit(Success(message: "Success"));
     } else {
-      Future.delayed(
-        Duration.zero,
-        () {
-          HelperUtils.showSnackBarMessage(
-              context, UiUtils.getTranslatedLabel(context, "purchaseFailed"));
-        },
+      emit(Failure(message: response.message));
+      HelperUtils.showSnackBarMessage(
+        context,
+        response.message,
       );
     }
   }

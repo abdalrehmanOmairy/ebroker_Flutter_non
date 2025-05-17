@@ -1,11 +1,15 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
+
+import 'package:flutter/material.dart';
+import 'package:vibration/vibration.dart';
+import 'package:record/record.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../../../utils/Extensions/extensions.dart';
 import '../../../../../utils/ui_utils.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_vibrate/flutter_vibrate.dart';
-import 'package:record/record.dart';
 
 import '../audio_state.dart';
 import '../globals.dart';
@@ -41,7 +45,8 @@ class _RecordButtonState extends State<RecordButton> {
   DateTime? startTime;
   Timer? timer;
   String recordDuration = "00:00";
-  Record? record;
+  AudioRecorder? audioRecorder;
+  String? currentFilePath;
 
   bool isLocked = false;
   bool showLottie = false;
@@ -58,6 +63,7 @@ class _RecordButtonState extends State<RecordButton> {
     widget.controller.addListener(() {
       setState(() {});
     });
+    audioRecorder = AudioRecorder();
   }
 
   @override
@@ -85,7 +91,7 @@ class _RecordButtonState extends State<RecordButton> {
 
   @override
   void dispose() {
-    if (record != null) record!.dispose();
+    audioRecorder?.dispose();
     timer?.cancel();
     timer = null;
     super.dispose();
@@ -113,13 +119,11 @@ class _RecordButtonState extends State<RecordButton> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(ChatGlobals.borderRadius),
           color: context.color.secondaryColor,
-          //color: Colors.black,
         ),
         padding: const EdgeInsets.symmetric(vertical: 15),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            //const FaIcon(FontAwesomeIcons.lock, size: 20),
             const Icon(Icons.lock, size: 20),
             const SizedBox(height: 8),
             FlowShader(
@@ -147,7 +151,6 @@ class _RecordButtonState extends State<RecordButton> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(ChatGlobals.borderRadius),
           color: context.color.primaryColor,
-          //color: Colors.black,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -171,7 +174,6 @@ class _RecordButtonState extends State<RecordButton> {
                     ),
                   ],
                 ),
-                //flowColors: const [Colors.white, Colors.grey],
               ),
               const SizedBox(width: size),
             ],
@@ -190,25 +192,13 @@ class _RecordButtonState extends State<RecordButton> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(ChatGlobals.borderRadius),
           color: context.color.secondaryColor,
-          //color: Colors.black,
         ),
         child: Padding(
           padding: const EdgeInsets.only(left: 15, right: 25),
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () async {
-              /*Vibrate.feedback(FeedbackType.success);
-              timer?.cancel();
-              timer = null;
-              startTime = null;
-              recordDuration = "00:00";
-
-              var filePath = await Record().stop();
-              AudioState.files.add(filePath!);
-              Globals.audioListKey.currentState!
-                  .insertItem(AudioState.files.length - 1);
-              debugPrint(filePath);*/
-              saveFile();
+              await saveFile();
               setState(() {
                 isLocked = false;
               });
@@ -226,7 +216,6 @@ class _RecordButtonState extends State<RecordButton> {
                   flowColors: [context.color.teritoryColor, Colors.grey],
                   child: Text(
                       UiUtils.getTranslatedLabel(context, "taploacktostop")),
-                  //flowColors: const [Colors.white, Colors.grey],
                 ),
                 const Center(
                   child: Icon(
@@ -234,11 +223,6 @@ class _RecordButtonState extends State<RecordButton> {
                     size: 18,
                     color: Colors.green,
                   ),
-                  /*  child: FaIcon(
-                    FontAwesomeIcons.lock,
-                    size: 18,
-                    color: Colors.green,
-                  ), */
                 ),
               ],
             ),
@@ -252,7 +236,6 @@ class _RecordButtonState extends State<RecordButton> {
     return GestureDetector(
       child: Transform.scale(
         scale: buttonScaleAnimation.value,
-        //child: Widgets.chatSendBtnWidget(widget.isSending, isaudio: true),
         child: Container(
           height: size,
           width: size,
@@ -260,7 +243,6 @@ class _RecordButtonState extends State<RecordButton> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: context.color.teritoryColor,
-            //color: Theme.of(context).primaryColor,
           ),
           child: widget.isSending
               ? const CircularProgressIndicator()
@@ -280,7 +262,8 @@ class _RecordButtonState extends State<RecordButton> {
         debugPrint("onLongPressEnd");
 
         if (isCancelled(details.localPosition, context)) {
-          if (await Vibrate.canVibrate) Vibrate.feedback(FeedbackType.heavy);
+          if (await Vibration.hasVibrator() ?? false)
+            Vibration.vibrate(duration: 100);
 
           timer?.cancel();
           timer = null;
@@ -294,16 +277,19 @@ class _RecordButtonState extends State<RecordButton> {
           Timer(const Duration(milliseconds: 1440), () async {
             widget.controller.reverse();
             debugPrint("Cancelled recording");
-            var filePath = await record!.stop();
-            debugPrint(filePath);
-            File(filePath!).delete();
-            debugPrint("Deleted $filePath");
+            await audioRecorder?.cancel();
+            if (currentFilePath != null &&
+                File(currentFilePath!).existsSync()) {
+              File(currentFilePath!).deleteSync();
+              debugPrint("Deleted $currentFilePath");
+            }
             showLottie = false;
           });
         } else if (checkIsLocked(details.localPosition)) {
           widget.controller.reverse();
 
-          if (await Vibrate.canVibrate) Vibrate.feedback(FeedbackType.heavy);
+          if (await Vibration.hasVibrator() ?? false)
+            Vibration.vibrate(duration: 100);
           debugPrint("Locked recording");
           debugPrint(details.localPosition.dy.toString());
           setState(() {
@@ -311,19 +297,7 @@ class _RecordButtonState extends State<RecordButton> {
           });
         } else {
           widget.controller.reverse();
-          saveFile();
-          /*Vibrate.feedback(FeedbackType.success);
-
-          timer?.cancel();
-          timer = null;
-          startTime = null;
-          recordDuration = "00:00";
-
-          var filePath = await Record().stop();
-          AudioState.files.add(filePath!);
-          Globals.audioListKey.currentState!
-              .insertItem(AudioState.files.length - 1);
-          debugPrint(filePath);*/
+          await saveFile();
         }
       },
       onLongPressCancel: () {
@@ -334,25 +308,25 @@ class _RecordButtonState extends State<RecordButton> {
       onLongPress: () async {
         if (widget.isSending) return;
         debugPrint("onLongPress");
-        if (await Vibrate.canVibrate) Vibrate.feedback(FeedbackType.success);
-        if (await Record().hasPermission()) {
-          record = Record();
-          await record!.start(
-            path:
-                "${ChatGlobals.documentPath}audio_${DateTime.now().millisecondsSinceEpoch}.m4a",
-            encoder: AudioEncoder.aacLc,
-            //encoder: AudioEncoder.AAC,
-            bitRate: 128000,
-            samplingRate: 44100,
+        if (await Vibration.hasVibrator() ?? false)
+          Vibration.vibrate(duration: 50);
+        if (await _checkAndRequestPermission()) {
+          audioRecorder ??= AudioRecorder();
+          currentFilePath = await _generateFilePath();
+          await audioRecorder!.start(
+            const RecordConfig(
+              encoder: AudioEncoder.aacLc,
+              bitRate: 128000,
+              sampleRate: 44100,
+            ),
+            path: currentFilePath ?? "",
           );
           startTime = DateTime.now();
-          // print("duration==$recordDuration");
           timer = Timer.periodic(const Duration(seconds: 1), (_) {
             final minDur = DateTime.now().difference(startTime!).inMinutes;
             final secDur = DateTime.now().difference(startTime!).inSeconds % 60;
             String min = minDur < 10 ? "0$minDur" : minDur.toString();
             String sec = secDur < 10 ? "0$secDur" : secDur.toString();
-            // print("duration==$min:$sec");
             setState(() {
               recordDuration = "$min:$sec";
             });
@@ -363,21 +337,23 @@ class _RecordButtonState extends State<RecordButton> {
   }
 
   Future<void> saveFile() async {
-    if (await Vibrate.canVibrate) Vibrate.feedback(FeedbackType.success);
+    if (await Vibration.hasVibrator() ?? false) Vibration.vibrate(duration: 50);
     timer?.cancel();
     timer = null;
     startTime = null;
     recordDuration = "00:00";
 
-    var filePath = await Record().stop();
-    AudioState.files.add(filePath!);
-    if (ChatGlobals.audioListKey.currentState != null) {
-      ChatGlobals.audioListKey.currentState!
-          .insertItem(AudioState.files.length - 1);
-    }
-    debugPrint(filePath);
-    if (widget.callback != null) {
-      widget.callback!(filePath);
+    String? filePath = await audioRecorder?.stop();
+    if (filePath != null) {
+      AudioState.files.add(filePath);
+      if (ChatGlobals.audioListKey.currentState != null) {
+        ChatGlobals.audioListKey.currentState!
+            .insertItem(AudioState.files.length - 1);
+      }
+      debugPrint(filePath);
+      if (widget.callback != null) {
+        widget.callback!(filePath);
+      }
     }
   }
 
@@ -387,5 +363,20 @@ class _RecordButtonState extends State<RecordButton> {
 
   bool isCancelled(Offset offset, BuildContext context) {
     return (offset.dx < -(MediaQuery.of(context).size.width * 0.2));
+  }
+
+  Future<bool> _checkAndRequestPermission() async {
+    var status = await Permission.microphone.status;
+    if (!status.isGranted) {
+      status = await Permission.microphone.request();
+    }
+    return status.isGranted;
+  }
+
+  Future<String> _generateFilePath() async {
+    final dir = await getApplicationDocumentsDirectory();
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final random = Random().nextInt(10000);
+    return "${dir.path}/audio_${timestamp}_$random.m4a";
   }
 }

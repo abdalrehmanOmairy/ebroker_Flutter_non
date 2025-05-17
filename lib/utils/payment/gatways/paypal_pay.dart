@@ -18,18 +18,19 @@ class Paypal extends Payment {
 
     Navigator.push<dynamic>(context, BlurredRouter(
       builder: (context) {
-        return PaypalWidget(
-          pacakge: _modal!,
-          onSuccess: (msg) {
-            Navigator.pop(context, {
-              "msg": msg,
-              "type": "success",
-            });
-          },
-          onFail: (msg) {
-            Navigator.pop(context, {"msg": msg, "type": "fail"});
-          },
-        );
+        return SizedBox();
+        //  PaypalWidget(
+        //   pacakge: _modal!,
+        //   onSuccess: (msg) {
+        //     Navigator.pop(context, {
+        //       "msg": msg,
+        //       "type": "success",
+        //     });
+        //   },
+        //   onFail: (msg) {
+        //     Navigator.pop(context, {"msg": msg, "type": "fail"});
+        //   },
+        // );
       },
     )).then((dynamic value) {
       //push and show dialog box about paypal success or failed, after that we call purchase method it will refresh API and check if package is purchased or not

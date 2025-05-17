@@ -703,10 +703,10 @@ class HomeScreenState extends State<HomeScreen>
                       // },));
                       FirebaseAnalytics.instance
                           .logEvent(name: "preview_property", parameters: {
-                        "user_ids": HiveUtils.getUserId(),
+                        "user_ids": HiveUtils.getUserId() ?? '',
                         "from_section": "featured",
-                        "property_id": propertymodel.id,
-                        "category_id": propertymodel.category!.id
+                        "property_id": propertymodel.id ?? '',
+                        "category_id": propertymodel.category!.id ?? ''
                       });
 
                       HelperUtils.goToNextPage(
@@ -1299,10 +1299,10 @@ class PersonalizedPropertyWidget extends StatelessWidget {
                         onTap: () {
                           FirebaseAnalytics.instance
                               .logEvent(name: "preview_property", parameters: {
-                            "user_ids": HiveUtils.getUserId(),
+                            "user_ids": HiveUtils.getUserId() ?? '' ,
                             "from_section": "featured",
-                            "property_id": propertymodel.id,
-                            "category_id": propertymodel.category!.id
+                            "property_id": propertymodel.id ?? '',
+                            "category_id": propertymodel.category!.id ?? ''
                           });
 
                           HelperUtils.goToNextPage(

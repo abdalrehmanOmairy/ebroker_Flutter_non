@@ -12,7 +12,7 @@ import 'package:ebroker/utils/responsiveSize.dart';
 import 'package:ebroker/utils/ui_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_paystack/flutter_paystack.dart';
+import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -45,7 +45,7 @@ class SubscriptionScreen extends StatefulWidget {
 }
 
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
-  PaystackPlugin paystackPlugin = PaystackPlugin();
+  // PaystackPlugin paystackPlugin = PaystackPlugin();
   final Razorpay _razorpay = Razorpay();
   int selectedPaymentMethod = 1;
   late WebViewController controllerGlobal;
@@ -58,27 +58,28 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   _openPaypal() {
     Navigator.push<dynamic>(context, BlurredRouter(
       builder: (context) {
-        return PaypalWidget(
-          pacakge: widget.pacakge,
-          onSuccess: (msg) {
-            Navigator.pop(
-              context,
-              {
-                "msg": msg,
-                "type": "success",
-              },
-            );
-          },
-          onFail: (msg) {
-            Navigator.pop(
-              context,
-              {
-                "msg": msg,
-                "type": "fail",
-              },
-            );
-          },
-        );
+        return SizedBox();
+        // PaypalWidget(
+        //   pacakge: widget.pacakge,
+        //   onSuccess: (msg) {
+        //     Navigator.pop(
+        //       context,
+        //       {
+        //         "msg": msg,
+        //         "type": "success",
+        //       },
+        //     );
+        //   },
+        //   onFail: (msg) {
+        //     Navigator.pop(
+        //       context,
+        //       {
+        //         "msg": msg,
+        //         "type": "fail",
+        //       },
+        //     );
+        //   },
+        // );
       },
     )).then((dynamic value) {
       //push and show dialog box about paypal success or failed, after that we call purchase method it will refresh API and check if package is purchased or not
@@ -175,36 +176,36 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   _paystack() async {
-    Charge paystackCharge = Charge()
-      ..amount = (widget.pacakge.price! * 100).toInt()
-      ..email = HiveUtils.getUserDetails().email
-      ..currency = Constant.paystackCurrency
-      ..reference = generateReference(HiveUtils.getUserDetails().email!)
-      ..putMetaData("username", HiveUtils.getUserDetails().name)
-      ..putMetaData("package_id", widget.pacakge.id)
-      ..putMetaData("user_id", HiveUtils.getUserId());
+    // Charge paystackCharge = Charge()
+    //   ..amount = (widget.pacakge.price! * 100).toInt()
+    //   ..email = HiveUtils.getUserDetails().email
+    //   ..currency = Constant.paystackCurrency
+    //   ..reference = generateReference(HiveUtils.getUserDetails().email!)
+    //   ..putMetaData("username", HiveUtils.getUserDetails().name)
+    //   ..putMetaData("package_id", widget.pacakge.id)
+    //   ..putMetaData("user_id", HiveUtils.getUserId());
 
-    CheckoutResponse checkoutResponse = await paystackPlugin.checkout(context,
-        logo: SizedBox(
-            height: 50,
-            width: 50,
-            child: UiUtils.getSvg(AppIcons.splashLogo,
-                color: context.color.teritoryColor)),
-        charge: paystackCharge,
-        method: CheckoutMethod.card);
+    // CheckoutResponse checkoutResponse = await paystackPlugin.checkout(context,
+    //     logo: SizedBox(
+    //         height: 50,
+    //         width: 50,
+    //         child: UiUtils.getSvg(AppIcons.splashLogo,
+    //             color: context.color.teritoryColor)),
+    //     charge: paystackCharge,
+    //     method: CheckoutMethod.card);
 
-    if (checkoutResponse.status) {
-      if (checkoutResponse.verify) {
-        await _purchase();
-      }
-    } else {
-      Future.delayed(
-        Duration.zero,
-        () {
-          HelperUtils.showSnackBarMessage(context, "purchaseFailed");
-        },
-      );
-    }
+    // if (checkoutResponse.status) {
+    //   if (checkoutResponse.verify) {
+    //     await _purchase();
+    //   }
+    // } else {
+    //   Future.delayed(
+    //     Duration.zero,
+    //     () {
+    //       HelperUtils.showSnackBarMessage(context, "purchaseFailed");
+    //     },
+    //   );
+    // }
   }
 
   String generateReference(String email) {
@@ -225,7 +226,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   @override
   void initState() {
-    paystackPlugin.initialize(publicKey: Constant.paystackKey);
+    // paystackPlugin.initialize(publicKey: Constant.paystackKey);
     super.initState();
   }
 

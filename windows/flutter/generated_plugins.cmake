@@ -5,10 +5,15 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_windows
   awesome_notifications
-  connectivity_plus_windows
+  connectivity_plus
   file_selector_windows
+  firebase_auth
+  firebase_core
+  flutter_inappwebview_windows
   permission_handler_windows
   record_windows
+  rive_common
+  share_plus
   url_launcher_windows
 )
 

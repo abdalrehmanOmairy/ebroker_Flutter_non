@@ -135,11 +135,11 @@ class _PlayGroundState extends State<PlayGround> {
               height: 60,
               child: Material(
                 child: TypeAheadField(
-                  textFieldConfiguration: const TextFieldConfiguration(
-                    autofocus: true,
-                  ),
+                  // textFieldConfiguration: const TextFieldConfiguration(
+                  //   autofocus: true,
+                  // ),
                   debounceDuration: const Duration(milliseconds: 500),
-                  minCharsForSuggestions: 3,
+                  // minCharsForSuggestions: 3,
                   suggestionsCallback: (pattern) async {
                     List<GooglePlaceModel> serchCities =
                         await GooglePlaceRepository().serchCities(
@@ -153,7 +153,7 @@ class _PlayGroundState extends State<PlayGround> {
                       title: Text(suggestion.city),
                     );
                   },
-                  onSuggestionSelected: (GooglePlaceModel suggestion) async {
+                  onSelected: (GooglePlaceModel suggestion) async {
                     var data = await GooglePlaceRepository()
                         .getPlaceDetailsFromPlaceId(suggestion.placeId);
                     cameraPosition = LatLng(data['lat'], data['lng']);

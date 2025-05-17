@@ -16,7 +16,11 @@ final appThemeData = {
       cursorColor: Colors.green,
       selectionHandleColor: Colors.green,
     ),
-    errorColor: errorMessageColor,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.green,
+      brightness: Brightness.light,
+      error: errorMessageColor,
+    ),
     // textSelectionTheme:
     //     const TextSelectionThemeData(selectionHandleColor: teritoryColor_),
     switchTheme: SwitchThemeData(
@@ -32,7 +36,11 @@ final appThemeData = {
   AppTheme.dark: ThemeData(
     brightness: Brightness.dark,
     fontFamily: "Manrope",
-    errorColor: errorMessageColor.withOpacity(0.7),
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.green,
+      brightness: Brightness.dark,
+      error: errorMessageColor.withOpacity(0.7),
+    ),
     textSelectionTheme:
         const TextSelectionThemeData(selectionHandleColor: teritoryColorDark),
     switchTheme: SwitchThemeData(

@@ -196,8 +196,8 @@ class _OtherInterestsState extends State<OtherInterests> {
         loadingBuilder: (context) {
           return Center(child: UiUtils.progress());
         },
-        minCharsForSuggestions: 2,
-        textFieldConfiguration: TextFieldConfiguration(
+        // minCharsForSuggestions: 2,
+        decorationBuilder: (context, child) => TextField(
             controller: _controller,
             decoration: InputDecoration(
               hintText: "searchCity".translate(context),
@@ -218,9 +218,9 @@ class _OtherInterestsState extends State<OtherInterests> {
                 borderSide: BorderSide(color: context.color.teritoryColor),
               ),
             )),
-        suggestionsBoxDecoration: SuggestionsBoxDecoration(
-          color: context.color.secondaryColor.withOpacity(1),
-        ),
+        // suggestionsBoxDecoration: SuggestionsBoxDecoration(
+        //   color: context.color.secondaryColor.withOpacity(1),
+        // ),
         itemBuilder: (context, GooglePlaceModel itemData) {
           List<String> address = [
             itemData.city,
@@ -232,7 +232,7 @@ class _OtherInterestsState extends State<OtherInterests> {
             title: Text(address.join(",").toString()),
           );
         },
-        onSuggestionSelected: (GooglePlaceModel suggestion) {
+        onSelected: (GooglePlaceModel suggestion) {
           List<String> addressList = [
             suggestion.city,
             // suggestion.state,

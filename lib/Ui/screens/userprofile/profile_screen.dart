@@ -9,9 +9,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:launch_review/launch_review.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:in_app_review/in_app_review.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../app/routes.dart';
@@ -870,10 +870,16 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   Future<void> rateUs() async {
-    LaunchReview.launch(
-      androidAppId: Constant.androidPackageName,
-      iOSAppId: Constant.iOSAppId,
-    );
+    final InAppReview inAppReview = InAppReview.instance;
+
+    if (await inAppReview.isAvailable()) {
+      await inAppReview.requestReview();
+    } else {
+      await inAppReview.openStoreListing(
+        appStoreId: Constant.iOSAppId, // required only for iOS
+        microsoftStoreId: null, // if targeting Windows
+      );
+    }
   }
 
   void logOutConfirmWidget() {

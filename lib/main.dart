@@ -148,7 +148,7 @@ class _AppState extends State<App> {
             AppSettings.stripeCurrency = state.stripeCurrency;
             AppSettings.stripePublishableKey = state.stripePublishableKey;
             AppSettings.stripeSecrateKey = state.stripeSecretKey;
-            paystack.init(AppSettings.paystackKey);
+            // paystack.init(AppSettings.paystackKey);
           }
         },
         child: BlocBuilder<LanguageCubit, LanguageState>(

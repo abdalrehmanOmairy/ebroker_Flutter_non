@@ -9,7 +9,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
 import '../../../app/routes.dart';
@@ -35,6 +34,7 @@ import '../../../utils/responsiveSize.dart';
 import '../../../utils/ui_utils.dart';
 import '../../../utils/validator.dart';
 import '../widgets/AnimatedRoutes/blur_page_route.dart';
+import 'package:mobile_number/mobile_number.dart';
 
 class LoginScreen extends StatefulWidget {
   final bool? isDeleteAccount;
@@ -138,7 +138,10 @@ class LoginScreenState extends State<LoginScreen> {
     String? simCountryCode;
 
     try {
-      simCountryCode = await FlutterSimCountryCode.simCountryCode;
+      final simCards = await MobileNumber.getSimCards;
+      if (simCards != null && simCards.isNotEmpty) {
+        simCountryCode = simCards.first.countryIso;
+      }
     } catch (e) {
       log("--don't--remove");
     }

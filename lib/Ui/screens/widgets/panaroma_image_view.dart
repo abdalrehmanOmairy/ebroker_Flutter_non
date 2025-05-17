@@ -1,36 +1,35 @@
 import 'dart:io';
 
-import '../../../utils/Extensions/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:panorama/panorama.dart';
+import 'package:panorama_viewer/panorama_viewer.dart';
 
 class PanaromaImageScreen extends StatelessWidget {
   final String imageUrl;
   final bool? isFileImage;
-  const PanaromaImageScreen(
-      {super.key, required this.imageUrl, this.isFileImage});
+  const PanaromaImageScreen({
+    Key? key,
+    required this.imageUrl,
+    this.isFileImage,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Image image;
+    if ((isFileImage ?? false)) {
+      image = Image.file(File(imageUrl));
+    } else {
+      image = Image.network(imageUrl);
+    }
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        iconTheme: IconThemeData(color: context.color.teritoryColor),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.black,
       body: SafeArea(
-        child: Panorama(
-          sensitivity: 2,
-          sensorControl: SensorControl.None,
-          latitude: 4,
-          child: (isFileImage ?? false)
-              ? Image.file(File(imageUrl))
-              : Image.network(
-                  imageUrl,
-                ),
-        ),
+        child: PanoramaViewer(child: image),
       ),
     );
   }

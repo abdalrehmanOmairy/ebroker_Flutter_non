@@ -10,7 +10,7 @@ import 'package:ebroker/utils/api.dart';
 import 'package:ebroker/utils/hive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_image/flutter_native_image.dart';
+// import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart';
 import 'package:share_plus/share_plus.dart';
@@ -18,6 +18,10 @@ import 'package:share_plus/share_plus.dart';
 import '../data/helper/custom_exception.dart';
 import 'constant.dart';
 import 'deeplinkManager.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'package:path/path.dart' as path;
 
 enum MessageType {
   success(successMessageColor),
@@ -314,14 +318,24 @@ class HelperUtils {
 
   static Future<File?> compressImageFile(File file) async {
     try {
-      //final compressedFile = await FlutterNativeImage.compressImage(file.path,quality: Constant.imgQuality,targetWidth: Constant.maxImgWidth,targetHeight: Constant.maxImgHeight);
-      final compressedFile = await FlutterNativeImage.compressImage(
-        file.path,
-        quality: Constant.uploadImageQuality,
+      final dir = await getTemporaryDirectory();
+      final targetPath = path.join(
+        dir.path,
+        "${DateTime.now().millisecondsSinceEpoch}_${path.basename(file.path)}",
       );
-      return File(compressedFile.path);
+
+      final result = await FlutterImageCompress.compressAndGetFile(
+        file.absolute.path,
+        targetPath,
+        quality: Constant.uploadImageQuality, // e.g. 70
+        minWidth: 1024, // optional
+        minHeight: 1024, // optional
+        format: CompressFormat.jpeg,
+      );
+      if (result == null) return null;
+      return File(result.path);
     } catch (e) {
-      return null; //If any error occurs during compression, the process is stopped.
+      return null;
     }
   }
 }

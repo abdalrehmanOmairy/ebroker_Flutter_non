@@ -35,8 +35,8 @@ class PickImage {
 
         int threeMB = 3000000;
         if (await file.length() >= threeMB) {
-          File? file2 = (await HelperUtils.compressImageFile(file));
-          file = file2!;
+          // File? file2 = (await HelperUtils.compressImageFile(file));
+          // file = file2!;
         }
 //adding map to stream
         _sink.add({
